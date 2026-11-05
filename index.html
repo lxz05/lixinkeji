@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>役前/体检机考训练系统 | 一粒麦子</title>
+<link rel="stylesheet" href="css/index.css">
+<style>
+</style>
+</head>
+<body>
+<div id="boot-mask"><div class="boot-spin"></div><p>题库加载中… 第一次打开可能要稍等 10–20 秒，请耐心等候</p></div>
+<header class="header">
+    <div class="header-inner">
+        <div class="logo" onclick="goHome()">
+            <div class="logo-icon">机考</div>
+            <div class="logo-text">
+                <h1>役前/体检机考训练系统</h1>
+                <p>EXAM TRAINING SYSTEM</p>
+            </div>
+        </div>
+        <nav class="nav">
+            <button class="nav-btn active" data-view="home" onclick="navigate('home')">首页</button>
+            <button class="nav-btn" data-view="mine" onclick="navigate('mine')">我的</button>
+            <button class="nav-btn" data-view="about" onclick="navigate('about')">关于作者</button>
+        </nav>
+    </div>
+</header>
+<main class="main">
+
+<!-- 首页 -->
+<section class="view active" id="view-home">
+    <div class="cd-banner">
+        <div class="cd-left">
+            <div class="cd-kicker" id="cd-title">距 2027 年上半年征兵报名还有</div>
+            <div class="cd-sub" id="cd-sub">男兵 12 月 1 日开放 · 女兵 1 月 1 日 · 以全国征兵网为准</div>
+        </div>
+        <div class="cd-right"><span class="cd-num" id="cd-days">--</span><span class="cd-unit">天</span></div>
+    </div>
+
+    <!-- 新增：春季走兵 3月1日倒计时 -->
+    <div class="cd-banner">
+      <div class="cd-left">
+          <div class="cd-kicker">距 2027 年3月春季走兵（3月10日）还有</div>
+          <div class="cd-sub">以当地征兵办起运通知为准</div>
+      </div>
+      <div class="cd-right"><span class="cd-num" id="cd-bing-days">--</span><span class="cd-unit">天</span></div>
+  </div>
+
+    <div class="dashboard-hero">
+        <h2>役前/体检机考训练系统</h2>
+        <p>计时还原考场：役前机考（总限时）＋ 体检机考（每题10秒），支持整套连考、单科模考与专题不限时练习</p>
+        <div class="hero-stats">
+            <div class="hero-stat"><div class="num" id="stat-exams">0</div><div class="label">已完成考试</div></div>
+            <div class="hero-stat"><div class="num" id="stat-wrong">0</div><div class="label">错题数量</div></div>
+            <div class="hero-stat"><div class="num" id="stat-avg">0%</div><div class="label">平均正确率</div></div>
+            <div class="hero-stat"><div class="num" id="stat-today">0</div><div class="label">今日做题</div></div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">役前机考（整场限时）</div>
+        <div class="section-desc">心理250题限时60分钟（打分50+情境100+迫选100）；职业200题（综合计算100+综合言语常识100）限时60分钟。时间到自动交卷，未答算错。</div>
+        <div class="entry-grid" id="yiqian-grid"></div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">体检机考（每题10秒）</div>
+        <div class="section-desc">言语100题、数学100题、心理人格300题，每题限时10秒，超时该题判错并显示答案。</div>
+        <div class="entry-grid" id="tijian-grid"></div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title">专题板块练习（不限时）</div>
+        <div class="section-desc">按你要备战的那场考试选择对应科目，刷该科目的全部题目，不限时，即答即看解析。</div>
+        <div class="practice-block">
+            <div class="practice-block-title">役前机考</div>
+            <div class="cat-list" id="cat-yiqian"></div>
+        </div>
+        <div class="practice-block">
+            <div class="practice-block-title">体检机考</div>
+            <div class="cat-list" id="cat-tijian"></div>
+        </div>
+    </div>
+
+    <div class="section-card calc-entry" onclick="navigate('calc')">
+        <div class="section-title">五维四型分数计算器</div>
+        <div class="section-desc">按「五维四型评分标准」估算：文化程度、体质状况、体能水平、心理素质、军事职业适应能力，给出满分 500 的参考总分。</div>
+        <button class="entry-btn">开始算分</button>
+    </div>
+
+</section>
+
+<!-- 五维四型分数计算器 -->
+<section class="view" id="view-calc">
+    <div class="calc-wrap">
+        <div class="calc-head">
+            <button class="back-btn" onclick="navigate('home')">‹</button>
+            <h2>五维四型分数计算器</h2>
+        </div>
+        <p class="calc-tip">依据《五维四型评分标准》估算。注意：五维四型没有全国统一公开的评分细则，各省、各年度的分值和评分线都可能不同，本计算器仅供估算参考，请以当地征兵办发布的评分标准为准。心理素质、军事职业适应能力按本系统测评结果填写。</p>
+
+        <div class="calc-card">
+            <div class="calc-sec">① 基本信息 · 文化程度</div>
+            <div class="calc-row">
+                <span class="calc-row-label">性别</span>
+                <div class="calc-seg">
+                    <button id="c-sex-m" class="on" onclick="setCalcSex('m')">男</button>
+                    <button id="c-sex-f" onclick="setCalcSex('f')">女</button>
+                </div>
+            </div>
+            <div class="calc-row">
+                <span class="calc-row-label">年龄段</span>
+                <select id="c-age" class="calc-age">
+                    <option value="0">≤18 岁</option>
+                    <option value="1">19–20 岁</option>
+                    <option value="2">21–22 岁</option>
+                    <option value="3">≥23 岁</option>
+                </select>
+            </div>
+            <div class="calc-grid">
+                <label>学历层次
+                    <select id="c-edu" onchange="syncDegree()">
+                        <option>大学本科及以上</option><option>大学专科</option><option>高中</option><option>初中</option>
+                    </select>
+                </label>
+                <label>取得学位
+                    <select id="c-degree">
+                        <option>学士</option><option>硕士</option><option>博士</option><option>未取得学位</option>
+                    </select>
+                </label>
+                <label>学业情况
+                    <select id="c-study"><option>毕业生</option><option>在校生</option></select>
+                </label>
+                <label>学历类型
+                    <select id="c-type"><option>全日制</option><option>非全日制</option></select>
+                </label>
+            </div>
+        </div>
+
+        <div class="calc-card">
+            <div class="calc-sec">② 体质状况（BMI 32% · 肺活量 36% · 闭眼单脚站立 32%）</div>
+            <div class="calc-grid">
+                <label>身高（cm）<input id="c-height" type="number" inputmode="decimal" placeholder="如 175" oninput="calcBmi()"></label>
+                <label>体重（kg）<input id="c-weight" type="number" inputmode="decimal" placeholder="如 65" oninput="calcBmi()"></label>
+                <label>肺活量（ml）<input id="c-vital" type="number" inputmode="numeric" placeholder="如 4800"></label>
+                <label>闭眼单脚站立（秒）<input id="c-balance" type="number" inputmode="decimal" placeholder="如 35"></label>
+            </div>
+            <div class="calc-sub" id="c-bmi">BMI：—（填身高、体重后自动计算）</div>
+        </div>
+
+        <div class="calc-card">
+            <div class="calc-sec">③ 体能水平（跳远 20% · 跳绳 20% · 体前屈 18% · 长跑 22% · 投掷/仰起 20%）</div>
+            <div class="calc-grid">
+                <label>立定跳远（cm）<input id="c-jump" type="number" inputmode="decimal" placeholder="如 250"></label>
+                <label>1 分钟跳绳（个）<input id="c-rope" type="number" inputmode="numeric" placeholder="如 160"></label>
+                <label>坐位体前屈（cm）<input id="c-sit" type="number" inputmode="decimal" placeholder="如 15"></label>
+                <label><span id="c-run-label">1000 米跑（分:秒）</span>
+                    <span class="calc-run"><input id="c-run-m" type="number" inputmode="numeric" placeholder="分"><i>:</i><input id="c-run-s" type="number" inputmode="numeric" placeholder="秒"></span>
+                </label>
+                <label><span id="c-last-label">投掷（2kg 实心球，米）</span><input id="c-last" type="number" inputmode="decimal" placeholder="如 9.5"></label>
+            </div>
+        </div>
+
+        <div class="calc-card">
+            <div class="calc-sec">④ 心理素质 / 军事职业适应能力（按本系统测评结果填写）</div>
+            <div class="calc-grid">
+                <label>心理素质（0~100，可填小数）<input id="c-psych" type="number" inputmode="numeric" min="0" max="100" step="0.1" placeholder="如 87.5"></label>
+                <label>军事职业适应能力（0~100，可填小数）<input id="c-mil" type="number" inputmode="numeric" min="0" max="100" step="0.1" placeholder="如 82.5"></label>
+              <p class="calc-hint">这两个分数请填<b>本系统「役前机考」</b>的成绩：心理素质填「心理」单科成绩，军事职业适应能力填「职业」单科成绩（考完在成绩单上看得到）。</p>
+            </div>
+        </div>
+
+        <button class="calc-btn" onclick="runCalc()">开始计算</button>
+        <div id="calc-result"></div>
+    </div>
+</section>
+
+<!-- 我的 -->
+<section class="view" id="view-mine">
+    <div class="mine-hero">
+        <h2>我的学习中心</h2>
+        <div class="mine-overview">
+            <div class="mo-item"><span class="mo-num" id="mine-wrong-n">0</span><span class="mo-label">当前错题</span></div>
+            <div class="mo-item"><span class="mo-num" id="mine-fav-n">0</span><span class="mo-label">收藏</span></div>
+            <div class="mo-item"><span class="mo-num" id="mine-exam-n">0</span><span class="mo-label">完成考试</span></div>
+        </div>
+        <button class="poster-btn" onclick="posterMine()">生成我的学习战报</button>
+    </div>
+    <div class="mine-group">
+        <div class="mine-group-title">复习与记录</div>
+        <div class="mine-grid" id="mine-grid"></div>
+    </div>
+    <div class="mine-group">
+        <div class="mine-group-title">体能 · 体检</div>
+        <div class="train-entry" onclick="openTrain()">
+            <div class="te-left">
+                <div class="te-title">训练与矫正</div>
+                <div class="te-sub">17 项体检纠正与体能提升方案</div>
+            </div>
+            <div class="te-arrow">›</div>
+        </div>
+    </div>
+</section>
+
+<!-- 训练与矫正：列表 -->
+<section class="view" id="view-train">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('mine')">‹</button>
+            <h2>训练与矫正</h2>
+        </div>
+        <div class="review-sub">17 项 · 体检纠正与体能提升，点开看具体方案</div>
+    </div>
+    <div class="train-disclaimer">以下训练与矫正方法仅供备考参考，不能替代医生诊断。训练前充分热身、量力而行，出现疼痛或不适应立即停止；有既往伤病、手术史或慢性病的，先咨询医生再开始。体检标准以当年公告和体检结论为准。</div>
+    <div class="card train-card"><div id="train-list"></div></div>
+    <!--<p class="train-invite">💡 如果你有更好的训练方案，或者发现哪一条写得不合适，欢迎在抖音搜「一粒麦子」找到作者，直接把方案发过来聊。</p>-->
+    </section>
+
+<!-- 训练与矫正：详情 -->
+<section class="view" id="view-traindetail">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('train')">‹</button>
+            <h2 id="td-title">训练方案</h2>
+        </div>
+    </div>
+    <div class="card" id="td-body"></div>
+</section>
+
+<!-- 体检标准（政策全文） -->
+<section class="view" id="view-policy">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('mine')">‹</button>
+            <h2>应征公民体格检查标准</h2>
+        </div>
+        <div class="review-sub">来源：全国征兵网 2021-01-14 公布 · 按官网原文整理</div>
+    </div>
+    <div class="card policy-card">
+        <p class="policy-note">本页依据全国征兵网公布的《应征公民体格检查标准》整理，供报名前自查参考。如有出入，以兵役机关正式文件和体检结论为准。<a href="https://www.gfbzb.gov.cn/zbbm/zcfg/byfg/tjbz.shtml" target="_blank" rel="noopener" style="color:var(--army-green);">查看官网原文</a></p>
+        <div class="policy-toc">
+            <a href="#policy-ch1">外科</a>
+            <a href="#policy-ch2">内科</a>
+            <a href="#policy-ch3">耳鼻咽喉科</a>
+            <a href="#policy-ch4">眼科</a>
+            <a href="#policy-ch5">口腔科</a>
+            <a href="#policy-ch6">妇科</a>
+            <a href="#policy-ch7">辅助检查</a>
+            <a href="#policy-ch8">适应性检测</a>
+        </div>
+        <h3 class="policy-chapter" id="policy-ch1">第一章 外科</h3>
+<p class="policy-art"><b>第一条</b>男性身高160cm以上，女性身高158cm以上，合格。</p>
+<p class="policy-sub">条件兵身高条件按有关标准执行。</p>
+<p class="policy-art"><b>第二条</b>体重符合下列条件且空腹血糖&lt;7.0mmol/L的，合格。</p>
+<p class="policy-sub">（一）男性：17.5≤BMI&lt;30，其中：17.5≤男性身体条件兵BMI&lt;27；</p>
+<p class="policy-sub">（二）女性：17≤BMI&lt;24。</p>
+<p class="policy-sub">BMI≥28须加查血液糖化血红蛋白检查项目，糖化血红蛋白百分比&lt;6.5%，合格。</p>
+<p class="policy-sub">（BMI=体重（千克）除以身高（米）的平方）</p>
+<p class="policy-art"><b>第三条</b>颅脑外伤，颅脑畸形，颅脑手术史，脑外伤后综合症，不合格。</p>
+<p class="policy-art"><b>第四条</b>颈部运动功能受限，斜颈，Ⅲ度以上单纯性甲状腺肿，乳腺肿瘤，不合格。单纯性甲状腺肿，条件兵不合格。</p>
+<p class="policy-art"><b>第五条</b>骨、关节、滑囊疾病或损伤及其后遗症，骨、关节畸形，胸廓畸形，习惯性脱臼，颈、胸、腰椎骨折史，腰椎间盘突出，强直性脊柱炎，影响肢体功能的腱鞘疾病，不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）可自行矫正的脊柱侧弯；</p>
+<p class="policy-sub">（二）四肢单纯性骨折，治愈1年后，X线片显示骨折线消失，复位良好，无功能障碍及后遗症（条件兵除外）；</p>
+<p class="policy-sub">（三）关节弹响排除骨关节疾病或损伤，不影响正常功能的；</p>
+<p class="policy-sub">（四）大骨节病仅指、趾关节稍粗大，无自觉症状，无功能障碍（仅陆勤人员）；</p>
+<p class="policy-sub">（五）轻度胸廓畸形（条件兵除外）。</p>
+<p class="policy-art"><b>第六条</b>肘关节过伸超过15度，肘关节外翻超过20度，或虽未超过前述规定但存在功能障碍，不合格。</p>
+<p class="policy-art"><b>第七条</b>下蹲不全，两下肢不等长超过2cm，膝内翻股骨内髁间距离和膝外翻胫骨内踝间距离超过7cm（条件兵超过4cm），或虽未超过前述规定但步态异常，不合格。</p>
+<p class="policy-sub">轻度下蹲不全（膝后夹角≤45度），除条件兵外合格。</p>
+<p class="policy-sub">双足并拢不能完全下蹲，或勉强下蹲不稳者，可调整下蹲姿势（双足分开不超过肩宽），调整姿势后能完全下蹲或轻度下蹲不全者，陆勤人员合格（臀肌挛缩综合征、跟腱短、下肢关节病变等病理性原因除外）。</p>
+<p class="policy-art"><b>第八条</b>手指、足趾残缺或畸形，足底弓完全消失的扁平足，重度皲裂症，不合格。</p>
+<p class="policy-art"><b>第九条</b>恶性肿瘤，面颈部长径超过1cm的良性肿瘤、囊肿，其他部位长径超过3cm的良性肿瘤、囊肿，或虽未超出前述规定但影响功能和训练的，不合格。</p>
+<p class="policy-art"><b>第十条</b>瘢痕体质，面颈部长径超过3cm或影响功能的瘢痕，其他部位影响功能的瘢痕，不合格。</p>
+<p class="policy-art"><b>第十一条</b>面颈部文身，着军队制式体能训练服其他裸露部位长径超过3cm的文身，其他部位长径超过10cm的文身，男性文眉、文眼线、文唇，女性文唇，不合格。</p>
+<p class="policy-art"><b>第十二条</b>脉管炎，动脉瘤，中、重度下肢静脉曲张和精索静脉曲张，不合格。下肢静脉曲张，精索静脉曲张，条件兵不合格。</p>
+<p class="policy-art"><b>第十三条</b>胸、腹腔手术史，疝，脱肛，肛瘘，肛旁脓肿，重度陈旧性肛裂，环状痔，混合痔，不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）阑尾炎手术后半年以上，无后遗症；</p>
+<p class="policy-sub">（二）腹股沟疝、股疝手术后1年以上，无后遗症；</p>
+<p class="policy-sub">（三）2个以下且长径均在0.8cm以下的混合痔。</p>
+<p class="policy-art"><b>第十四条</b>泌尿生殖系统疾病或损伤及其后遗症，生殖器官畸形或发育不全，单睾，隐睾及其术后，不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）无自觉症状的轻度非交通性精索鞘膜积液，不大于健侧睾丸（条件兵除外）；</p>
+<p class="policy-sub">（二）无自觉症状的睾丸鞘膜积液，包括睾丸在内不大于健侧睾丸1倍（条件兵除外）；</p>
+<p class="policy-sub">（三）交通性鞘膜积液，手术后1年以上无复发，无后遗症；</p>
+<p class="policy-sub">（四）无压痛、无自觉症状的精索、副睾小结节，数量在2个以下且长径均在0.5cm以下；</p>
+<p class="policy-sub">（五）包茎、包皮过长（条件兵除外）；</p>
+<p class="policy-sub">（六）轻度急性包皮炎、阴囊炎。</p>
+<p class="policy-art"><b>第十五条</b>重度腋臭，不合格。轻度腋臭，条件兵不合格。</p>
+<p class="policy-art"><b>第十六条</b>头癣，泛发性体癣，疥疮，慢性泛发性湿疹，慢性荨麻疹，泛发性神经性皮炎，银屑病，面颈部长径超过1cm的血管痣、色素痣、胎痣和白癜风，其他传染性或难以治愈的皮肤病，不合格。多发性毛囊炎，皮肤对刺激物过敏或有接触性皮炎史，手足部位近3年连续发生冻疮，条件兵不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）单发局限性神经性皮炎，长径在3cm以下；</p>
+<p class="policy-sub">（二）股癣，手（足）癣，甲（指、趾）癣，躯干花斑癣；</p>
+<p class="policy-sub">（三）身体其他部位白癜风不超过2处，每处长径在3cm以下。</p>
+<p class="policy-art"><b>第十七条</b>淋病，梅毒，软下疳，性病性淋巴肉芽肿，非淋菌性尿道炎，尖锐湿疣，生殖器疱疹，以及其他性传播疾病，不合格。</p>
+<h3 class="policy-chapter" id="policy-ch2">第二章 内科</h3>
+<p class="policy-art"><b>第十八条</b>血压在下列范围，合格。</p>
+<p class="policy-sub">（一）收缩压≥90 mmHg，＜140 mmHg；</p>
+<p class="policy-sub">（二）舒张压≥60 mmHg，＜90 mmHg。</p>
+<p class="policy-art"><b>第十九条</b>心率在下列范围，合格。</p>
+<p class="policy-sub">（一）心率60～100次/分；</p>
+<p class="policy-sub">（二）心率50～59次/分或101～110次/分，经检查系生理性（条件兵除外）。</p>
+<p class="policy-art"><b>第二十条</b>高血压病，器质性心脏病，血管疾病，右位心脏，不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）听诊发现心律不齐、心脏收缩期杂音的，经检查系生理性（条件兵除外）；</p>
+<p class="policy-sub">（二）直立性低血压、周围血管舒缩障碍（仅陆勤人员）。</p>
+<p class="policy-art"><b>第二十一条</b>慢性支气管炎，支气管扩张，支气管哮喘，肺大泡，气胸及气胸史，以及其他呼吸系统慢性疾病，不合格。</p>
+<p class="policy-art"><b>第二十二条</b>严重慢性胃、肠疾病，肝脏、胆囊、脾脏、胰腺疾病，内脏下垂，腹部包块，不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）仰卧位，平静呼吸，在右锁骨中线肋缘下触及肝脏不超过1.5cm，剑突下不超过3cm，质软，边薄，平滑，无触痛、叩击痛，肝上界在正常范围，左肋缘下未触及脾脏，无贫血，营养状况良好；</p>
+<p class="policy-sub">（二）既往因患疟疾、血吸虫病、黑热病引起的脾脏肿大，现无自觉症状，无贫血，营养状况良好。</p>
+<p class="policy-art"><b>第二十三条</b>泌尿、血液、内分泌系统疾病，代谢性疾病，免疫性疾病，不合格。</p>
+<p class="policy-art"><b>第二十四条</b>艾滋病，病毒性肝炎，结核，流行性出血热，细菌性和阿米巴性痢疾，黑热病，伤寒，副伤寒，布鲁氏菌病，钩端螺旋体病，血吸虫病，疟疾，丝虫病，以及其他传染病，不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）急性病毒性肝炎治愈后2年以上未再复发，无症状和体征，实验室检查正常；</p>
+<p class="policy-sub">（二）原发性肺结核、继发性肺结核、结核性胸膜炎、肾结核、腹膜结核，临床治愈后3年无复发（条件兵除外）；</p>
+<p class="policy-sub">（三）细菌性痢疾治愈1年以上；</p>
+<p class="policy-sub">（四）疟疾、黑热病、血吸虫病、阿米巴性痢疾、钩端螺旋体病、流行性出血热、伤寒、副伤寒、布鲁氏菌病，治愈2年以上，无后遗症；</p>
+<p class="policy-sub">（五）丝虫病治愈半年以上，无后遗症。</p>
+<p class="policy-art"><b>第二十五条</b>癫痫，以及其他神经系统疾病及后遗症，不合格。</p>
+<p class="policy-art"><b>第二十六条</b>精神分裂症，转换性障碍，分离性障碍，抑郁症，躁狂症，精神活性物质滥用和依赖，人格障碍，应激障碍， 睡眠障碍，进食障碍，精神发育迟滞，遗尿症，以及其他精神类疾病，不合格。</p>
+<p class="policy-art"><b>第二十七条</b>影响正常表达的口吃，不合格。</p>
+<h3 class="policy-chapter" id="policy-ch3">第三章 耳鼻咽喉科</h3>
+<p class="policy-art"><b>第二十八条</b>听力测定双侧耳语均低于5m，不合格。</p>
+<p class="policy-sub">一侧耳语5m、另一侧不低于3m，陆勤人员合格。</p>
+<p class="policy-art"><b>第二十九条</b>眩晕病，不合格。</p>
+<p class="policy-art"><b>第三十条</b>耳廓明显畸形，外耳道闭锁，反复发炎的耳前瘘管，耳廓及外耳道湿疹，耳霉菌病，不合格。</p>
+<p class="policy-sub">轻度耳廓及外耳道湿疹，轻度耳霉菌病，陆勤人员合格。</p>
+<p class="policy-art"><b>第三十一条</b>鼓膜穿孔，化脓性中耳炎，乳突炎，以及其他难以治愈的耳病，不合格。鼓膜中度以上内陷，鼓膜瘢痕或钙化斑超过鼓膜的1/3，咽鼓管通气功能、耳气压功能及鼓膜活动不良，咽鼓管咽口或周围淋巴样组织增生，条件兵不合格。</p>
+<p class="policy-sub">鼓膜内陷、粘连、萎缩、瘢痕、钙化斑，条件兵合格。</p>
+<p class="policy-art"><b>第三十二条</b>嗅觉丧失，不合格。嗅觉迟钝，条件兵不合格。</p>
+<p class="policy-art"><b>第三十三条</b>鼻中隔穿孔，鼻畸形，重度肥厚性鼻炎，萎缩性鼻炎，重度鼻粘膜糜烂，鼻息肉，中鼻甲息肉样变，以及其他影响鼻功能的慢性鼻病，不合格。严重变应性鼻炎，肥厚性鼻炎，慢性鼻窦炎，严重鼻中隔偏曲，条件兵不合格。</p>
+<p class="policy-sub">不影响副鼻窦引流的中鼻甲肥大，中鼻道有少量粘液脓性分泌物，轻度萎缩性鼻炎，陆勤人员合格。</p>
+<p class="policy-art"><b>第三十四条</b>超过Ⅱ度肿大的慢性扁桃体炎，影响吞咽、发音功能难以治愈的咽、喉疾病，严重阻塞性睡眠呼吸暂停综合征，不合格。</p>
+<h3 class="policy-chapter" id="policy-ch4">第四章 眼科</h3>
+<p class="policy-art"><b>第三十五条</b>任何一眼裸眼视力低于4.5，不合格。</p>
+<p class="policy-sub">任何一眼裸眼视力低于4.8，需进行矫正视力检查，任何一眼矫正视力低于4.8或矫正度数超过600度，不合格。</p>
+<p class="policy-sub">屈光不正经准分子激光手术（不含有晶体眼人工晶体植入术等其他术式）后半年以上，无并发症，任何一眼裸眼视力达到4.8，眼底检查正常，除条件兵外合格。</p>
+<p class="policy-sub">条件兵视力合格条件按有关标准执行。</p>
+<p class="policy-art"><b>第三十六条</b>色弱，色盲，不合格。</p>
+<p class="policy-sub">能够识别红、绿、黄、蓝、紫各单色者，陆勤人员合格。</p>
+<p class="policy-art"><b>第三十七条</b>影响眼功能的眼睑、睑缘、结膜、泪器疾病，不合格。</p>
+<p class="policy-sub">伸入角膜不超过2mm的假性翼状胬肉，陆勤人员合格。</p>
+<p class="policy-art"><b>第三十八条</b>眼球突出，眼球震颤，眼肌疾病，不合格。</p>
+<p class="policy-sub">15度以内的共同性内、外斜视，陆勤人员合格。</p>
+<p class="policy-art"><b>第三十九条</b>角膜、巩膜、虹膜睫状体疾病，瞳孔变形、运动障碍，不合格。</p>
+<p class="policy-sub">不影响视力的角膜云翳，合格。</p>
+<p class="policy-art"><b>第四十条</b>晶状体、玻璃体、视网膜、脉络膜、视神经疾病，以及青光眼，不合格。</p>
+<p class="policy-sub">先天性少数散在的晶状体小混浊点，合格。</p>
+<h3 class="policy-chapter" id="policy-ch5">第五章 口腔科</h3>
+<p class="policy-art"><b>第四十一条</b>深度龋齿超过3个，缺齿超过2个（经正畸治疗拔除、牙列整齐的除外），全口义齿及复杂的可摘局部义齿，重度牙周炎，影响咀嚼及发音功能的口腔疾病，颞颌关节疾病，唇、腭裂及唇裂术后明显瘢痕，不合格。</p>
+<p class="policy-sub">经治疗、修复后功能良好的龋齿、缺齿，合格。</p>
+<p class="policy-art"><b>第四十二条</b>中度以上氟斑牙及牙釉质发育不全，切牙、尖牙、双尖牙明显缺损或缺失，超牙合超过0.5cm，开牙合超过0.3cm，上下颌牙咬合到对侧牙龈的深覆牙合，反牙合，牙列不齐，重度牙龈炎，中度牙周炎，条件兵不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）上下颌左右尖牙、双尖牙咬合相距0.3cm以内；</p>
+<p class="policy-sub">（二）切牙缺失1个，经固定义齿修复后功能良好，或牙列无间隙，替代牙功能良好；</p>
+<p class="policy-sub">（三）不影响咬合的个别切牙牙列不齐或重叠；</p>
+<p class="policy-sub">（四）不影响咬合的个别切牙轻度反牙合，无其他体征；</p>
+<p class="policy-sub">（五）错牙合畸形经正畸治疗后功能良好。</p>
+<p class="policy-art"><b>第四十三条</b>慢性腮腺炎，腮腺囊肿，口腔肿瘤，不合格。</p>
+<h3 class="policy-chapter" id="policy-ch6">第六章 妇科</h3>
+<p class="policy-art"><b>第四十四条</b>闭经，严重痛经，子宫不规则出血，功能性子宫出血，子宫内膜异位症，不合格。</p>
+<p class="policy-art"><b>第四十五条</b>内外生殖器畸形或缺陷，不合格。</p>
+<p class="policy-art"><b>第四十六条</b>急、慢性盆腔炎，盆腔肿物，不合格。</p>
+<p class="policy-art"><b>第四十七条</b>霉菌性阴道炎，滴虫性阴道炎，不合格。</p>
+<p class="policy-art"><b>第四十八条</b>妊娠，不合格。</p>
+<h3 class="policy-chapter" id="policy-ch7">第七章 辅助检查</h3>
+<p class="policy-art"><b>第四十九条</b>血细胞分析结果在下列范围，合格。</p>
+<p class="policy-sub">（一）血红蛋白：男性130～175g／L，女性115～150g／L；</p>
+<p class="policy-sub">（二）红细胞计数：男性4.3～5.8×10¹²/L，女性3.8～5.1×10¹²/L；</p>
+<p class="policy-sub">（三）白细胞计数：3.5～9.5×10⁹/L；</p>
+<p class="policy-sub">（四）中性粒细胞百分数：40％～75％；</p>
+<p class="policy-sub">（五）淋巴细胞百分数：20％～50％；</p>
+<p class="policy-sub">（六）血小板计数：125～350×10⁹/L。</p>
+<p class="policy-sub">血常规检查结果要结合临床及地区差异作出正确结论。血红蛋白、红细胞数、白细胞总数、白细胞分类、血小板计数稍高或稍低，根据所在地区人体正常值范围，在排除器质性病变的前提下，不作单项淘汰。</p>
+<p class="policy-art"><b>第五十条</b>血生化分析结果在下列范围，合格。</p>
+<p class="policy-sub">（一）血清丙氨酸氨基转移酶:男性9～50 U/L，女性7～40 U/L；</p>
+<p class="policy-sub">血清丙氨酸氨基转移酶，男性&gt;50 U/L、≤60 U/L，女性&gt;40 U/L、≤50 U/L，应当结合临床物理检查，在排除疾病的情况下，视为合格，但须从严掌握；</p>
+<p class="policy-sub">（二）血清肌酐：</p>
+<p class="policy-sub">酶法：男性59～104μmol/L，女性45～84μmol/L；</p>
+<p class="policy-sub">苦味酸速率法：男性62～115μmol/L，女性53～97μmol/L；</p>
+<p class="policy-sub">苦味酸去蛋白终点法：男性44～133μmol/L，女性70～106μmol/L；</p>
+<p class="policy-sub">（三）血清尿素：2.9～8.2mmol/L。</p>
+<p class="policy-art"><b>第五十一条</b>乙型肝炎表面抗原检测阳性，艾滋病病毒（HIV1+2）抗体检测阳性，不合格。</p>
+<p class="policy-art"><b>第五十二条</b>尿常规检查结果在下列范围，合格。</p>
+<p class="policy-sub">（一）尿蛋白：阴性至微量；</p>
+<p class="policy-sub">（二）尿酮体：阴性；</p>
+<p class="policy-sub">（三）尿糖：阴性；</p>
+<p class="policy-sub">（四）胆红素：阴性；</p>
+<p class="policy-sub">（五）尿胆原：0.1～1.0 Eμ／dl(弱阳性)。</p>
+<p class="policy-sub">尿常规检查结果要结合临床及地区差异作出正确结论。</p>
+<p class="policy-art"><b>第五十三条</b>尿液离心沉淀标本镜检结果在下列范围，合格。</p>
+<p class="policy-sub">（一）红细胞：男性0～偶见／高倍镜，女性0～3／高倍镜，女性不超过6个/高倍镜应结合外阴检查排除疾病；</p>
+<p class="policy-sub">（二）白细胞：男性0～3／高倍镜，女性0～5／高倍镜，不超过6个/高倍镜应结合外生殖器或外阴检查排除疾病；</p>
+<p class="policy-sub">（三）管型：无或偶见透明管型，无其他管型。</p>
+<p class="policy-art"><b>第五十四条</b>尿液毒品检测阳性，不合格。</p>
+<p class="policy-art"><b>第五十五条</b>尿液妊娠试验阴性，合格。</p>
+<p class="policy-sub">尿液妊娠试验阳性、但血清妊娠试验阴性，合格。</p>
+<p class="policy-art"><b>第五十六条</b>大便常规检查结果在下列范围，合格。</p>
+<p class="policy-sub">（一）外观：黄软；</p>
+<p class="policy-sub">（二）镜检：红、白细胞各0～2／高倍镜，无钩虫、鞭虫、绦虫、血吸虫、肝吸虫、姜片虫卵及肠道原虫。</p>
+<p class="policy-sub">大便常规检查，在地方性寄生虫病和血吸虫病流行地区为必检项目，其他地区根据需要进行检查。</p>
+<p class="policy-art"><b>第五十七条</b>胸部X射线检查结果在下列范围内，合格。</p>
+<p class="policy-sub">（一）胸部X射线检查未见异常；</p>
+<p class="policy-sub">（二）孤立散在的钙化点(直径不超过0.5cm)，双肺野不超过3个，密度高，边缘清晰，周围无浸润现象（条件兵除外）；</p>
+<p class="policy-sub">（三）肺纹理轻度增强(无呼吸道病史，无自觉症状)；</p>
+<p class="policy-sub">（四）一侧肋膈角轻度变钝(无心、肺、胸疾病史，无自觉症状)。</p>
+<p class="policy-art"><b>第五十八条</b>心电图检查结果在下列范围内，合格。</p>
+<p class="policy-sub">（一）正常心电图；</p>
+<p class="policy-sub">（二）大致正常心电图。大致正常心电图范围按有关规定执行。</p>
+<p class="policy-art"><b>第五十九条</b>腹部超声检查发现恶性征象、病理性脾肿大、胰腺病变、肝肾弥漫性实质损害、肾盂积水、结石、内脏反位、单肾以及其他病变和异常的，不合格。</p>
+<p class="policy-sub">下列情况合格（第五至十一款，条件兵除外）：</p>
+<p class="policy-sub">（一）肝、胆、胰、脾、双肾未见明显异常；</p>
+<p class="policy-sub">（二）轻、中度脂肪肝且肝功能正常；</p>
+<p class="policy-sub">（三）胆囊息肉样病变，数量3个以下且长径均在0.5cm以下；</p>
+<p class="policy-sub">（四）副脾；</p>
+<p class="policy-sub">（五）肝肾囊肿和血管瘤单脏器数量3个以下且长径均在1cm以下；</p>
+<p class="policy-sub">（六）单发肝肾囊肿和血管瘤长径3cm以下；</p>
+<p class="policy-sub">（七）肝、脾内钙化灶数量3个以下且长径均在1cm以下；</p>
+<p class="policy-sub">（八）双肾实质钙化灶数量3个以下且长径1cm以下；</p>
+<p class="policy-sub">（九）双肾错构瘤数量2个以下且长径均在1cm以下；</p>
+<p class="policy-sub">（十）肾盂宽不超过1.5cm，输尿管不增宽；</p>
+<p class="policy-sub">（十一）脾脏长径10cm以下，厚度4.5cm以下；脾脏长径超过10cm或厚径超过4.5cm，但脾面积测量（0.8×长径×厚径）38cm²以下，排除器质性病变。</p>
+<p class="policy-art"><b>第六十条</b>妇科超声检查发现子宫肌瘤、附件区不明性质包块、以及其他病变和异常的，不合格。</p>
+<p class="policy-sub">下列情况合格：</p>
+<p class="policy-sub">（一）子宫、卵巢大小形态未见明显异常；</p>
+<p class="policy-sub">（二）不伴其他异常的盆腔积液深度不超过2cm；</p>
+<p class="policy-sub">（三）单发附件区、卵巢囊肿长径小于3cm。</p>
+<h3 class="policy-chapter" id="policy-ch8">第八章 士兵职业基本适应性检测</h3>
+<p class="policy-sub">士兵职业基本适应性检测合格条件按有关规定执行。</p>
+<p class="policy-sub">（注：条件兵，指坦克乘员、水面舰艇、潜艇、空降兵、特种部队等对应征青年政治、身体、文化、心理有特殊要求的兵员；条件兵合格或不合格的具体类别和标准，按照有关规定执行。）</p>
+    </div>
+</section>
+
+<!-- 考试页 -->
+<section class="view" id="view-exam">
+    <div class="exam-header">
+        <div class="exam-mode" id="exam-mode">考试<span class="sub"></span></div>
+        <div class="exam-timer" id="exam-timer">00:00</div>
+        <div class="exam-progress" id="exam-progress">
+            <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+            <div class="progress-text" id="progress-text">第 1 题</div>
+        </div>
+        <button type="button" class="hbtn exit" onclick="confirmExit()">退出</button>
+    </div>
+    <div class="question-card" id="question-card"></div>
+    <div class="exam-actions">
+        <button class="btn btn-secondary" onclick="prevQuestion()" id="btn-prev" style="display:none;">上一题</button>
+        <button class="btn btn-primary" onclick="nextQuestion()" id="btn-next" disabled>下一题</button>
+    </div>
+    <p class="exam-hint-enter">电脑端：答完这道题，按 <b>Enter</b> 直接进入下一题；按 <b>←</b> <b>→</b> 切题</p>
+    <p class="exam-disclaimer">模拟练习题 · 非官方考试 · 答案与评分以官方为准</p>
+</section>
+
+<!-- 模块过渡页 -->
+<section class="view" id="view-transition">
+    <div class="transition-card" id="transition-card"></div>
+</section>
+
+<!-- 结果页 -->
+<section class="view" id="view-result">
+    <div class="result-card" id="result-card"></div>
+</section>
+
+<!-- 本场错题 -->
+<section class="view" id="view-review">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="goBackFromReview()">‹</button>
+            <h2 id="review-title">本场错题</h2>
+        </div>
+        <div class="review-sub" id="review-sub"></div>
+    </div>
+    <div class="list-container" id="review-list"></div>
+</section>
+
+<!-- 错题本 -->
+<section class="view" id="view-wrong">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('mine')">‹</button>
+            <h2>错题本</h2>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="mini-btn" onclick="retryWrong()">错题重练</button>
+            <button class="mini-btn" onclick="openBulkRemove()">一键移出</button>
+            <button class="mini-btn danger" onclick="clearWrong()">清空错题</button>
+        </div>
+    </div>
+    <div class="sys-tabs" id="wrong-sys"></div>
+    <div class="filter-bar" id="wrong-filter"></div>
+    <div class="filter-bar" id="wrong-correct-filter"></div>
+    <div class="list-container" id="wrong-list"></div>
+</section>
+
+<!-- 收藏 -->
+<section class="view" id="view-favorites">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('mine')">‹</button>
+            <h2>收藏夹</h2>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="mini-btn" onclick="practiceFavorites()">收藏复习</button>
+            <button class="mini-btn danger" onclick="clearFavorites()">清空收藏</button>
+        </div>
+    </div>
+    <div class="sys-tabs" id="fav-sys"></div>
+    <div class="filter-bar" id="fav-filter"></div>
+    <div class="list-container" id="fav-list"></div>
+</section>
+
+<!-- 考试纪录 -->
+<section class="view" id="view-history">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('mine')">‹</button>
+            <h2>考试纪录</h2>
+        </div>
+        <button class="mini-btn danger" onclick="clearHistory()">清空纪录</button>
+    </div>
+    <div class="list-container" id="history-list"></div>
+</section>
+
+<!-- 统计 -->
+<section class="view" id="view-stats">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('mine')">‹</button>
+            <h2>学习统计</h2>
+        </div>
+    </div>
+    <div class="stat-grid" id="stat-boxes"></div>
+    <div class="chart-card"><h3>各板块正确率</h3>
+        <p style="font-size:11.5px;color:var(--text-light);margin:-6px 0 14px;">按两场考试分开统计；心理与人格合并；役前「综合计算」含数理化；体检「数学计算」只统计数学题；役前「综合言语常识」含国防等常识。</p>
+        <div id="group-chart"></div></div>
+    <div class="chart-card"><h3>每日做题量</h3><p style="font-size:11.5px;color:var(--text-light);margin:-6px 0 14px;">只显示真正做过题的日期，没做的日期不占位置。</p><div id="daily-chart"></div></div>
+</section>
+
+<!-- 设置 -->
+<section class="view" id="view-settings">
+    <div class="page-header">
+        <div class="page-title-row">
+            <button class="back-btn" onclick="navigate('mine')">‹</button>
+            <h2>设置与数据管理</h2>
+        </div>
+    </div>
+    <div class="settings-group">
+        <h3>答题设置</h3>
+        <div class="setting-row"><span>答题后立即显示解析<br><span class="setting-desc">关闭时整套交卷后统一判分，更接近真机考</span></span><label class="switch"><input type="checkbox" id="set-instant" checked><span class="slider-sw"></span></label></div>
+        <div class="setting-row"><span>答对后自动跳下一题</span><label class="switch"><input type="checkbox" id="set-autonext" checked><span class="slider-sw"></span></label></div>
+    </div>
+    <div class="settings-group">
+        <h3>学习数据备份</h3>
+        <div class="btn-row">
+            <button class="btn btn-primary" onclick="exportAllData()">导出全部数据备份</button>
+            <button class="btn btn-secondary" onclick="document.getElementById('import-data-file').click()">导入数据恢复</button>
+        </div>
+        <input type="file" id="import-data-file" accept=".json" style="display:none;" onchange="importAllData(event)">
+        <p style="font-size:11.5px;color:var(--text-light);margin-top:10px;">错题、收藏、纪录、统计均保存在本浏览器，清理缓存会丢失，建议定期导出备份。iPhone 若用「文件」App 直接打开，可能无法保存记录；建议用手机浏览器打开，或把页面部署到网站上。</p>
+    </div>
+</section>
+
+<!-- 关于 -->
+<section class="view" id="view-about">
+    <div class="about-wrap">
+        <div class="about-hero">
+            <img class="about-avatar" src="img/yilimaizi.png" alt="作者头像">
+            <h2>作者：一粒麦子</h2>
+            <div class="ah-sub">役前 / 体检机考训练，愿你顺利入伍、前程似锦</div>
+        </div>
+
+        <div class="about-card">
+            <h3>版权声明</h3>
+            <p>本考试系统由 <b>一粒麦子</b> 设计制作。题目来源于公开网络资料及部分网友回忆、整理，相关版权归原作者所有。</p>
+            <p>本程序仅供个人学习、备考参考，不代表任何官方立场，题目及答案可能存在疏漏，请以官方正式考试与解释为准。如内容涉及侵权或有误，欢迎联系作者核实、删除或更正。</p>
+        </div>
+
+        <div class="about-card">
+            <h3>作者寄语 · 关于这些题</h3>
+            <p>很多地方把题卖到 50 到 100，因为种种原因，信息差很大，很多信息不透明。于是我开始整理这些资料，并且全部免费公开出来。我不建议同志们去付费——我整理的不会比他们差，甚至比他们更全。我觉得这个行业不应该靠卖题赚钱：大家都是一腔热血参军报国，不该赚这个钱。我会一直免费做下去。</p>
+            <p>也欢迎大家有好的题目、发现答案有问题，随时来找我反馈，尤其是考完试的同志。你把题目反馈给我，我整理后免费发给后来者；后来者考完再反馈，如此循环，让大家少走弯路——前人栽树，后人乘凉。如果你参加过役前机考、愿意交流题目，欢迎通过抖音找我。</p>
+            <p>祝各位顺利入伍，武运昌隆。</p>
+        </div>
+        <!--
+        <div class="about-card">
+            <h3>联系作者 · 入伍交流群</h3>
+            <p>我在抖音运营公开入伍交流群：目前 <b>35 个公开群、累计 1 万多位同志</b>。进群后打开「群收藏」，可以直接领题。</p>
+            <p>群里可以交流各地政策、体检经验、怎么选兵种、入伍要带什么；我还按省份建了交流群，方便大家找老乡、聊本地的详细政策。群里有退伍老兵志愿做公益答疑。所有群都<b>纯免费</b>，资料互通，欢迎大家加入。</p>
+            <div class="shot-wrap">
+                <img class="about-shot" src="data:image/jpeg;base64" alt="抖音入伍交流群">
+                <div class="shot-caption">部分群数据：35 个公开群、累计 1 万+ 人，每天都有同志在交流</div>
+            </div>
+            <div class="copy-box">
+                <span class="cb-label">抖音号</span>
+                <span class="cb-value" onclick="copyText('binnn_0516',null)">binnn_0516</span>
+                <button class="cb-btn" onclick="copyText('binnn_0516',this)">复制</button>
+            </div>
+            <p class="copy-tip">📱 手机端可长按数字全选复制，或直接点"复制"按钮。</p>
+            <div class="shot-wrap">
+                <img class="about-shot" src="data:image/jpeg;base64" alt="作者抖音主页">
+                <div class="shot-caption">抖音搜索上方抖音号 → 关注 → 进主页即可找到入群入口<br>感谢大家给我点上一个免费的关注</div>
+            </div>
+            <p style="margin-top:14px;">如果发现题目错误、答案有问题，或者你有更好的题目想补充，非常欢迎通过抖音联系我，一起把这个系统做得更完善。</p>
+        </div>
+
+        <div class="about-card">
+            <h3>支持作者</h3>
+                <p class="share-line">这套系统是我一个人整理的，永久免费、不登录、不收费。如果你觉得它有用，把它分享给身边要入伍的同学、或者发到你们的群里，就是对我最大的支持——多一个人少走弯路，这套题库就多一分价值。</p>
+            <p>收集、整理、校对题目都要花不少时间和金钱。如果这套系统对你有帮助，可以请作者喝杯下午茶——这是对我持续更新、整理题目的鼓励。</p>
+            <p><b>全凭自愿，不打赏也不影响任何功能使用。</b></p>
+            <p>祝君成功入伍，武运昌隆。</p>
+            <div class="donate-img-wrap">
+                <img class="donate-img" id="donate-img" src="data:image/png;base64" alt="微信收款码">
+                <div class="save-tip" style="color:var(--text);font-weight:600;">☕ 打赏一块钱就行，这是对我继续坚持做免费题库的很大的鼓励，感谢支持。</div>
+                <div class="save-tip">📱 长按收款码图片，可保存到相册后扫码打赏</div>
+                <button class="mini-btn" style="margin-top:10px;" onclick="saveImage('donate-img','微信收款码.png')">保存收款码到相册</button>
+            </div>
+        </div>
+        -->
+
+    </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+    <p class="copyright-text">© 一粒麦子 · 役前/体检机考训练系统 · 仅供学习参考<br>题目来源民间资料，与官方无关，仅供参考<br>祝君成功入伍，武运昌隆</p>
+    <!--<p class="copyright-text" style="margin-top:8px;opacity:.7;font-size:12px;">最近更新：<span id="last-update">2026-11-04 12:25</span></p>-->
+</footer>
+
+<!-- 通用弹窗 -->
+<div class="modal-overlay" id="poster-modal" onclick="if(event.target===this)closePoster()">
+    <div class="poster-box"><button class="modal-close" onclick="closePoster()">&times;</button>
+        <img id="poster-img" alt="分享海报">
+        <div class="poster-tip" id="poster-tip"></div>
+        <button class="btn btn-primary" onclick="downloadPoster()">保存图片</button>
+    </div>
+</div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal wide" id="modal-box"><button class="modal-close" onclick="closeModal()">&times;</button><div id="modal-content"></div></div>
+</div>
+
+<script src="js/bank1.js"></script>
+<script src="js/bank2.js"></script>
+<script>window.QUESTIONS_BUILTIN = window.__BANK || [];</script>
+
+<script src="js/index.js"></script>
+
+</body>
+</html>
