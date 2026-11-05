@@ -418,25 +418,17 @@ body.in-exam .nav { display:none !important; }
 .welcome-btn { width:100%; margin-top:18px; padding:12px; background:var(--army-green); color:white; border:none; border-radius:10px; font-size:14.5px; font-weight:700; cursor:pointer; font-family:inherit; }
 .welcome-btn:hover { background:var(--army-mid); }
 
-@media(max-width: 768px) {
-    .header-inner {
-        flex-direction:column;
-        align-items: flex-start;
-    }
-    .nav {
-        justify-content: flex-start;
-    }
-    .dashboard-hero {
-        padding: 24px;
-    }
-    .question-card {
-        padding: 20px;
-    }
-    .ac-grid {
-        grid-template-columns: repeat(8,1fr);
-    }
-    .bar-chart-row .bl {
-        width: 100px;
+@media(max-width:768px) {
+    .header-inner { flex-direction:column; align-items:flex-start; }
+    .nav { justify-content:flex-start; }
+    .dashboard-hero { padding:24px; }
+    .question-card { padding:20px; }
+    .ac-grid { grid-template-columns:repeat(4,1fr); }
+    .bar-chart-row .bl { width:100px; }
+
+    /* 题目和选项字号保持一样，这里统一16px，你可以改数字 */
+    .question-text, .option-item {
+        font-size: 16px;
     }
 }
 @media print {
