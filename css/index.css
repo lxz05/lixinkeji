@@ -426,9 +426,12 @@ body.in-exam .nav { display:none !important; }
     .ac-grid { grid-template-columns:repeat(4,1fr); }
     .bar-chart-row .bl { width:100px; }
 
-    /* 题目和选项字号保持一样，这里统一16px，你可以改数字 */
-    .question-text, .option-item {
+    .option-item {
         font-size: 16px;
+        white-space: normal; /* 允许文字换行 */
+        word-break: break-all;
+        text-align: center;
+        padding: 4px 2px;
     }
 }
 @media print {
